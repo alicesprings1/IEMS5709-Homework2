@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SONTriplesReducer2 extends Reducer<Text, IntWritable,Text,IntWritable> {
-    Map<String,Integer> totalTriplesMap =new HashMap<>();
+public class SONTripletsReducer2 extends Reducer<Text, IntWritable,Text,IntWritable> {
+    Map<String,Integer> totalTripletsMap =new HashMap<>();
     int totalNumBaskets=0;
     @Override
     protected void reduce(Text key, Iterable<IntWritable> values, Reducer<Text, IntWritable, Text, IntWritable>.Context context) throws IOException, InterruptedException {
@@ -22,7 +22,7 @@ public class SONTriplesReducer2 extends Reducer<Text, IntWritable,Text,IntWritab
             for (IntWritable value:values) {
                 totalCount+= value.get();
             }
-            totalTriplesMap.put(key.toString(),totalCount);
+            totalTripletsMap.put(key.toString(),totalCount);
         }
     }
 
@@ -32,11 +32,11 @@ public class SONTriplesReducer2 extends Reducer<Text, IntWritable,Text,IntWritab
         int threshold=(int) (totalNumBaskets*0.0025);
         System.out.println("totalNumBaskets: "+totalNumBaskets);
         System.out.println("threshold: "+threshold);
-        for (Map.Entry<String,Integer> entry: totalTriplesMap.entrySet()) {
-            String triple = entry.getKey();
+        for (Map.Entry<String,Integer> entry: totalTripletsMap.entrySet()) {
+            String triplet = entry.getKey();
             Integer count = entry.getValue();
             if (count>=threshold){
-                context.write(new Text(triple),new IntWritable(count));
+                context.write(new Text(triplet),new IntWritable(count));
             }
         }
     }

@@ -8,7 +8,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 import java.util.*;
 
-public class SONTriplesMapper1 extends Mapper<LongWritable, Text,Text, NullWritable> {
+public class SONTripletsMapper1 extends Mapper<LongWritable, Text,Text, NullWritable> {
     int numBaskets=0;
     Map<String,Integer> wordMap=new HashMap<>();
 
@@ -40,14 +40,12 @@ public class SONTriplesMapper1 extends Mapper<LongWritable, Text,Text, NullWrita
                 frequentWords.add(key);
             }
         }
-        // create candidate triples
+        // create candidate pairs
         for (int i = 0; i < frequentWords.size(); i++) {
             for (int j = i+1; j < frequentWords.size(); j++) {
-                for (int k = j+1; k < frequentWords.size(); k++) {
-                    String[] s={frequentWords.get(i), frequentWords.get(j), frequentWords.get(k)};
-                    Arrays.sort(s);
-                    context.write(new Text(Arrays.toString(s)),NullWritable.get());
-                }
+                String[] s={frequentWords.get(i), frequentWords.get(j)};
+                Arrays.sort(s);
+                context.write(new Text(Arrays.toString(s)),NullWritable.get());
             }
         }
     }

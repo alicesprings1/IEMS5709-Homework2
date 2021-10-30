@@ -13,22 +13,22 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.*;
 
-public class SONTriplesMapper2 extends Mapper<LongWritable, Text,Text, IntWritable> {
-    Set<String> candidateTriples =new HashSet<>();
+public class SONTripletsMapper2 extends Mapper<LongWritable, Text,Text, IntWritable> {
+    Set<String> candidatePairs =new HashSet<>();
     int numBaskets=0;
-    Map<String,Integer> triplesMap =new HashMap<>();
+    Map<String,Integer> tripletsMap =new HashMap<>();
     @Override
     protected void setup(Mapper<LongWritable, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
-        String candidateTriple;
+        String candidatePair;
         URI[] cacheFiles=context.getCacheFiles();
         FileSystem fs = FileSystem.get(context.getConfiguration());
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fs.open(new Path(cacheFiles[0].toString()))));
 //        BufferedReader bufferedReader = new BufferedReader(new FileReader(cacheFiles[0].getPath()));
 //        BufferedReader bufferedReader = new BufferedReader(new FileReader("./candidatePairs"));
-        while ((candidateTriple=bufferedReader.readLine())!=null){
-            candidateTriples.add(candidateTriple);
+        while ((candidatePair=bufferedReader.readLine())!=null){
+            candidatePairs.add(candidatePair);
         }
-        System.out.println("numCandidateTriples: "+ candidateTriples.size());
+        System.out.println("numCandidatePairs: "+ candidatePairs.size());
     }
 
     @Override
@@ -39,24 +39,31 @@ public class SONTriplesMapper2 extends Mapper<LongWritable, Text,Text, IntWritab
         for (int i = 0; i < words.length; i++) {
             for (int j = i+1; j < words.length; j++) {
                 for (int k = j+1; k < words.length; k++) {
-                    String[] s={words[i], words[j],words[k]};
-                    Arrays.sort(s);
-                    if (candidateTriples.contains(Arrays.toString(s))){
-                        Integer count = triplesMap.get(Arrays.toString(s));
+                    String[] s1={words[i], words[j]};
+                    Arrays.sort(s1);
+                    String[] s2={words[i], words[k]};
+                    Arrays.sort(s2);
+                    String[] s3={words[j], words[k]};
+                    Arrays.sort(s3);
+                    if (candidatePairs.contains(Arrays.toString(s1))&&candidatePairs.contains(Arrays.toString(s2))&&candidatePairs.contains(Arrays.toString(s3))){
+                        String[] s={words[i],words[j],words[k]};
+                        Arrays.sort(s);
+                        Integer count = tripletsMap.get(Arrays.toString(s));
                         if (count==null){
-                            triplesMap.put(Arrays.toString(s),1);
+                            tripletsMap.put(Arrays.toString(s),1);
                         }else {
-                            triplesMap.put(Arrays.toString(s),count+1);
+                            tripletsMap.put(Arrays.toString(s),count+1);
                         }
                     }
                 }
+
             }
         }
     }
 
     @Override
     protected void cleanup(Mapper<LongWritable, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
-        for (Map.Entry <String,Integer> entry: triplesMap.entrySet()) {
+        for (Map.Entry <String,Integer> entry: tripletsMap.entrySet()) {
             context.write(new Text(entry.getKey()),new IntWritable(entry.getValue()));
         }
         System.out.println("numBaskets in current mapper: "+numBaskets);

@@ -11,6 +11,7 @@
   <modules>
     <module>hw2-2b</module>
       <module>hw2-2c</module>
+      <module>hw2-2a</module>
   </modules>
 
   <properties>
