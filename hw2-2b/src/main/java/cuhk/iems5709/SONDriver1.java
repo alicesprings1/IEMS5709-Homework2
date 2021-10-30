@@ -21,8 +21,10 @@ public class SONDriver1 {
         job.setMapOutputValueClass(NullWritable.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(NullWritable.class);
-        FileInputFormat.addInputPath(job,new Path("src/dataset"));
-        FileOutputFormat.setOutputPath(job,new Path("src/output/SON1output"));
+//        FileInputFormat.addInputPath(job,new Path("src/dataset"));
+//        FileOutputFormat.setOutputPath(job,new Path("src/output/SON1output"));
+        FileInputFormat.addInputPath(job,new Path("/user/s1155164941/shakespeare_basket"));
+        FileOutputFormat.setOutputPath(job,new Path("/user/s1155164941/output/hw2/2b-1"));
         System.exit(job.waitForCompletion(true)?0:1);
     }
 }
